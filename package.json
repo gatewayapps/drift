@@ -3,7 +3,13 @@
   "version": "0.1.0",
   "description": "",
   "main": "dist/index.js",
+  "bin": {
+    "drift": "./dist/cli/drift.js"
+  },
   "scripts": {
+    "build": "tsc",
+    "lint": "tslint --project .",
+    "prepublishOnly": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,5 +24,16 @@
   "bugs": {
     "url": "https://github.com/gatewayapps/drift/issues"
   },
-  "homepage": "https://github.com/gatewayapps/drift#readme"
+  "homepage": "https://github.com/gatewayapps/drift#readme",
+  "devDependencies": {
+    "@types/node": "^11.10.5",
+    "@types/yargs": "^12.0.9",
+    "prettier": "^1.16.4",
+    "prettier-tslint": "^0.4.2",
+    "tslint": "^5.13.1",
+    "typescript": "^3.3.3333"
+  },
+  "dependencies": {
+    "yargs": "^13.2.2"
+  }
 }
