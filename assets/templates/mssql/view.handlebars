@@ -1,0 +1,6 @@
+CREATE VIEW [{{#if SchemaName}}{{SchemaName}}{{else}}dbo{{/if}}].[{{ObjectName}}]
+AS
+SELECT
+  *
+FROM
+  [dbo].[SomeTableOrView];

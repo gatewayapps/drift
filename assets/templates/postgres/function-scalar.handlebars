@@ -1,0 +1,9 @@
+CREATE OR REPLACE FUNCTION {{ObjectName}}
+(
+  param1 INT
+)
+RETURNS INT
+AS $$
+  SELECT param1 + 1
+$$
+LANGUAGE SQL;

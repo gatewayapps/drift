@@ -1,0 +1,17 @@
+CREATE OR REPLACE FUNCTION {{ObjectName}}
+(
+  param1 INT
+)
+RETURNS TABLE
+(
+  col1 INT,
+  col2 TEXT
+)
+AS $$
+  SELECT
+    col1,
+    col2
+  FROM
+    SomeTableOrView
+$$
+LANGUAGE SQL;

@@ -1,0 +1,13 @@
+CREATE FUNCTION [{{#if SchemaName}}{{SchemaName}}{{else}}dbo{{/if}}].[{{ObjectName}}]
+(
+  @i_param1 INT
+)
+RETURNS INT
+AS
+BEGIN
+
+  DECLARE @m_Value INT;
+
+  RETURN @m_Value;
+
+END
