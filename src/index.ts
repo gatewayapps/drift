@@ -1,2 +1,2 @@
 export { init, IInitOptions } from './lib/commands/init'
-export { IDriftConfig } from './lib/DriftConfig'
+export { IDriftConfig, ProviderType, MigrationScriptType } from './lib/DriftConfig'

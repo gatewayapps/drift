@@ -1,4 +1,5 @@
 import { IInitOptions, init } from '../../lib/commands/init'
+import { defaultConfigFileName } from '../../lib/DriftConfig'
 
 import colors from 'colors'
 
@@ -7,6 +8,12 @@ export const command = 'init [dir]'
 export const desc = 'Initialize configuration and directory for database scripts'
 
 export const builder = {
+  config: {
+    alias: ['c'],
+    default: defaultConfigFileName,
+    demandOption: false,
+    describe: 'Name of the configuration file to create relative to the current working directory'
+  },
   dir: {
     alias: ['d'],
     default: '.',
