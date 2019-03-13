@@ -6,16 +6,13 @@ export const defaultConfigFileName = 'drift.yml'
 
 export type ProviderType = 'mssql' | 'postgres'
 
-export type MigrationScriptType = 'js' | 'ts'
-
 export interface IDriftConfig {
-  migrationScriptType?: MigrationScriptType
+  typescript?: boolean
   providers: ProviderType[]
   rootDir: string
   scripts: {
-    preDeploy: string[]
-    postDeploy: string[]
     migrations: string[]
+    postDeploy: string[]
   }
 }
 
@@ -24,8 +21,7 @@ const defaultConfig: IDriftConfig = {
   rootDir: '.',
   scripts: {
     migrations: [],
-    postDeploy: [],
-    preDeploy: []
+    postDeploy: []
   }
 }
 

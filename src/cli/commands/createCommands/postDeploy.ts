@@ -1,10 +1,12 @@
 import colors from 'colors'
-import { createMigration } from '../../../lib/commands/create'
+import { createPostDeploy } from '../../../lib/commands/create'
 import { defaultConfigFileName } from '../../../lib/DriftConfig'
 
-export const command = 'migration <name>'
+export const command = 'postDeploy <name>'
 
-export const description = 'Create a new migration script'
+export const aliases = ['post', 'post-deploy', 'postdeploy']
+
+export const desc = 'Creates a new post-deployment script'
 
 export const builder = {
   config: {
@@ -13,13 +15,13 @@ export const builder = {
     description: 'Path to the drift configuration file relative to the current working directory'
   },
   name: {
-    description: 'Name of the migration script'
+    description: 'Name of the post-deployment script'
   }
 }
 
 export async function handler(argv: any) {
   try {
-    const scriptFile = await createMigration(argv.name, argv.config)
+    const scriptFile = await createPostDeploy(argv.name, argv.config)
     console.log(`Created file: ${scriptFile}`)
   } catch (err) {
     console.log(colors.red(err.message))
