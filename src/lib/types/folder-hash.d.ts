@@ -9,7 +9,15 @@ declare module 'folder-hash' {
     }
   }
   type HashElementCallbackFn = (err?: Error, hash?: string) => void
+  interface IHashedFile {
+    hash: string
+    name: string
+  }
+  interface IHashedFolder {
+    children: IHashedFile[]
+    hash: string
+    name: string
+  }
 
-  function hashElement(filename: string, folderPath: string, options?: IHashElementOptions, callback?: HashElementCallbackFn): Promise<string>
-  function hashElement(path: string, options?: IHashElementOptions, callback?: HashElementCallbackFn): Promise<string>
+  function hashElement(path: string, options?: IHashElementOptions, callback?: HashElementCallbackFn): Promise<IHashedFolder>
 }

@@ -1,21 +1,27 @@
+import { MigrationStatus } from '../constants'
+import { DbContext } from '../DbContext'
 import { loadConfiguration } from '../DriftConfig'
+import { IMigrationsLog } from '../models/MigrationsLog'
 import { createDatabaseConnection, IDatabaseOptions, tryCreateDatabase } from '../utils/database'
 import { ILogger, noLogger } from '../utils/logging'
-import { createMigrationHash } from '../utils/migration'
+import { createMigrationHash, IReplacements, runMigrations, runPostDeploy } from '../utils/migration'
 
 export interface IPublishOptions {
   configFile?: string
   database: IDatabaseOptions
   force?: boolean
-  replacements?: {
-    [key: string]: any
-  }
+  replacements?: IReplacements
   logger?: ILogger
 }
 
-console.log()
+export interface IPublishResult {
+  error?: Error
+  migrationsLog: IMigrationsLog
+  status: MigrationStatus
+  statusDesc: string
+}
 
-export async function publish(options: IPublishOptions) {
+export async function publish(options: IPublishOptions): Promise<IPublishResult> {
   const config = await loadConfiguration(options.configFile)
   const replacements = buildReplacements(options)
   const logger = options.logger || noLogger
@@ -34,25 +40,74 @@ export async function publish(options: IPublishOptions) {
     logger.status(`Connected to database ${options.database.databaseName}`)
   }
 
-  // Register
-
-  // Generate migration hash
-  const migrationHash = await createMigrationHash(config, options.database.provider)
+  // Create context and sync
+  const dbContext = new DbContext(dbConn)
+  await dbContext.sync()
 
   // Check if migration needs to be applied
-  // Create transaction
-  // Run migrations
-  // Run database objects
-  // Run post deploy scripts
-  // Record successful migration
-  // Commit transaction
+  const migrationHash = await createMigrationHash(config, options.database.provider)
+  const lastSuccess = await dbContext.MigrationLog.findOne({
+    order: [['logId', 'DESC']],
+    where: { status: MigrationStatus.Success }
+  })
+  if (!options.force && lastSuccess && lastSuccess.migration !== migrationHash) {
+    return {
+      migrationsLog: lastSuccess.toJSON(),
+      status: MigrationStatus.AlreadyApplied,
+      statusDesc: MigrationStatus[MigrationStatus.AlreadyApplied]
+    }
+  }
 
-  // ON ERROR
-  // Rollback transaction
-  // Record failed migration
+  // Create database transaction
+  const trx = await dbContext.beginTransaction()
+
+  try {
+    // Run migrations
+    await runMigrations(dbContext, config, options.database.provider, replacements, logger)
+
+    // Run database objects
+
+    // Run post deploy scripts
+    await runPostDeploy(dbContext, config, options.database.provider, replacements, logger)
+
+    // Record successful migration
+    const migrationsLog = await dbContext.MigrationLog.create(
+      {
+        message: 'Migration completed successfully.',
+        migration: migrationHash,
+        status: MigrationStatus.Success
+      },
+      {
+        transaction: trx
+      }
+    )
+
+    // Commit transaction
+    await dbContext.commitTransaction()
+
+    return {
+      migrationsLog,
+      status: MigrationStatus.Success,
+      statusDesc: MigrationStatus[MigrationStatus.Success]
+    }
+  } catch (err) {
+    await dbContext.rollbackTransaction()
+    const migrationsLog = await dbContext.MigrationLog.create({
+      details: JSON.stringify(err),
+      message: err.message,
+      migration: err.scriptName,
+      status: MigrationStatus.Failed
+    })
+    return {
+      error: err,
+      migrationsLog,
+      status: MigrationStatus.Failed,
+      statusDesc: MigrationStatus[MigrationStatus.Failed]
+    }
+  }
 }
 
-function buildReplacements(options: IPublishOptions): any {
+function buildReplacements(options: IPublishOptions): IReplacements {
   const replacements = {
     DatabaseName: options.database.databaseName,
     Provider: options.database.provider,

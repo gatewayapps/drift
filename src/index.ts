@@ -1,2 +1,6 @@
 export { init, IInitOptions } from './lib/commands/init'
+export { IPublishOptions, publish } from './lib/commands/publish'
 export { IDriftConfig, ProviderType } from './lib/DriftConfig'
+export { DbContext } from './lib/DbContext'
+export { MigrationStatus } from './lib/constants'
+export { MigrationError } from './lib/MigrationError'

@@ -22,7 +22,7 @@ export function createDatabaseConnection(options: IDatabaseOptions, databaseName
     },
     dialect: options.provider,
     host: options.host,
-    logging: options.logging,
+    logging: options.logging || false,
     pool: {
       idle: 10000,
       max: 5,
@@ -36,6 +36,7 @@ export function createDatabaseConnection(options: IDatabaseOptions, databaseName
   switch (options.provider) {
     case 'mssql':
       sequelizeConfig.dialectOptions = {
+        encrypt: false,
         instanceName: options.instanceName && options.instanceName.toUpperCase() !== 'MSSQLSERVER' ? options.instanceName : undefined,
         requestTimeout: 30000
       }

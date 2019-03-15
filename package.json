@@ -46,5 +46,8 @@
     "js-yaml": "^3.12.2",
     "sequelize": "^4.43.0",
     "yargs": "^13.2.2"
+  },
+  "optionalDependencies": {
+    "tedious": "^5.0.3"
   }
 }

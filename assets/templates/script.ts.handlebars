@@ -1,9 +1,9 @@
 /******************************************************************************
  * {{ScriptType}}: {{ScriptName}}
  *****************************************************************************/
-import { QueryInterface, SequelizeStatic } from 'sequelize'
-import { ProviderType } from '@gatewayapps/drift'
+import { SequelizeStatic } from 'sequelize'
+import { DbContext, IReplacements, ProviderType } from '@gatewayapps/drift'
 
-export function async exec(instance: QueryInterface, Sequelize: SequelizeStatic, provider: ProviderType): Promise<void> {
+export function async exec(context: DbContext, Sequelize: SequelizeStatic, provider: ProviderType, replacements: IReplacements): Promise<void> {
 
 }

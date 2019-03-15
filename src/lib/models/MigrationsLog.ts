@@ -1,17 +1,19 @@
 import Sequelize from 'sequelize'
 
 export interface IMigrationsLog {
-  logId: number
-  timestamp: Date
+  logId?: number
+  timestamp?: Date
   status: number
   message: string
   migration?: string
   details?: string
 }
 
-export default function(connection: Sequelize.Sequelize): Sequelize.Model<{}, IMigrationsLog> {
-  return connection.define<{}, IMigrationsLog>(
-    'migration',
+export type MigrationsLogInstance = Sequelize.Instance<IMigrationsLog> & IMigrationsLog
+
+export default function(connection: Sequelize.Sequelize): Sequelize.Model<MigrationsLogInstance, IMigrationsLog> {
+  return connection.define<MigrationsLogInstance, IMigrationsLog>(
+    'migrationsLog',
     {
       logId: {
         allowNull: false,
