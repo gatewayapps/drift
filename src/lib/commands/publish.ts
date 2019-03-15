@@ -50,7 +50,7 @@ export async function publish(options: IPublishOptions): Promise<IPublishResult>
     order: [['logId', 'DESC']],
     where: { status: MigrationStatus.Success }
   })
-  if (!options.force && lastSuccess && lastSuccess.migration !== migrationHash) {
+  if (!options.force && lastSuccess && lastSuccess.migration === migrationHash) {
     return {
       migrationsLog: lastSuccess.toJSON(),
       status: MigrationStatus.AlreadyApplied,
