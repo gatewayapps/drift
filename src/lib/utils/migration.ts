@@ -2,10 +2,11 @@ import crypto from 'crypto'
 import folderHash from 'folder-hash'
 import fs from 'fs-extra'
 import path from 'path'
-import sequelize from 'sequelize'
+import { Sequelize } from 'sequelize'
 import { DbContext } from '../DbContext'
 import { IDriftConfig, ProviderType } from '../DriftConfig'
 import { MigrationError } from '../MigrationError'
+import { Migration } from '../models/Migration'
 import { ILogger } from './logging'
 
 const HASH_ALGO = 'sha256'
@@ -16,7 +17,7 @@ export interface IReplacements {
 }
 
 export interface IScriptModule {
-  exec: (context: DbContext, Sequelize: sequelize.SequelizeStatic, provider: ProviderType, replacements: IReplacements) => Promise<void>
+  exec: (context: DbContext, sequelize: typeof Sequelize, provider: ProviderType, replacements: IReplacements) => Promise<void>
 }
 
 export async function createMigrationHash(config: IDriftConfig, provider: ProviderType) {
@@ -42,7 +43,7 @@ export async function runMigrations(dbContext: DbContext, config: IDriftConfig, 
     return
   }
 
-  const migrationsToApply = await getMigrationsToApply(dbContext, config.scripts.migrations)
+  const migrationsToApply = await getMigrationsToApply(config.scripts.migrations)
 
   if (migrationsToApply.length === 0) {
     logger.status('No new migrations to apply')
@@ -54,9 +55,8 @@ export async function runMigrations(dbContext: DbContext, config: IDriftConfig, 
       const fullPath = path.join(config.rootDir, 'migrations', migration)
       const migrationScript = (await import(fullPath)) as IScriptModule
       logger.status(`Applying migration script: ${migration}`)
-      console.log(migrationScript)
-      await migrationScript.exec(dbContext, sequelize, provider, replacements)
-      await dbContext.Migration.create({ migration }, { transaction: dbContext.transaction })
+      await migrationScript.exec(dbContext, Sequelize, provider, replacements)
+      await Migration.create({ migration }, { transaction: dbContext.transaction })
     } catch (err) {
       throw new MigrationError(err.message, migration, err)
     }
@@ -73,14 +73,14 @@ export async function runPostDeploy(dbContext: DbContext, config: IDriftConfig, 
       const fullPath = path.join(config.rootDir, 'postDeploy', postDeploy)
       const migrationScript = (await import(fullPath)) as IScriptModule
       logger.status(`Applying post deploy script: ${postDeploy}`)
-      await migrationScript.exec(dbContext, sequelize, provider, replacements)
+      await migrationScript.exec(dbContext, Sequelize, provider, replacements)
     } catch (err) {
       throw new MigrationError(err.message, postDeploy, err)
     }
   }
 }
 
-async function getMigrationsToApply(dbContext: DbContext, migrations: string[]): Promise<string[]> {
-  const appliedMigrations = await dbContext.Migration.findAll()
+async function getMigrationsToApply(migrations: string[]): Promise<string[]> {
+  const appliedMigrations = await Migration.findAll()
   return migrations.filter((migration) => !appliedMigrations.some((applied) => applied.migration === migration))
 }

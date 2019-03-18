@@ -33,6 +33,9 @@ export const builder = {
     demandOption: true,
     implies: 'user'
   },
+  port: {
+    type: 'number'
+  },
   provider: {
     choices: ['mssql', 'postgres'],
     demandOption: true,
@@ -63,6 +66,7 @@ export async function handler(argv: any) {
         instanceName: argv.instanceName,
         logging: argv.verbose,
         password: argv.password,
+        port: argv.port,
         provider: argv.provider,
         username: argv.user
       },

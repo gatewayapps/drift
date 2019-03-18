@@ -1,4 +1,4 @@
-import Sequelize from 'sequelize'
+import { Column, DataType, Model, Table } from 'sequelize-typescript'
 
 export interface IMigrationsLog {
   logId?: number
@@ -9,43 +9,23 @@ export interface IMigrationsLog {
   details?: string
 }
 
-export type MigrationsLogInstance = Sequelize.Instance<IMigrationsLog> & IMigrationsLog
+@Table({ tableName: '__MigrationsLog' })
+export class MigrationsLog extends Model<MigrationsLog> {
+  @Column({ primaryKey: true, autoIncrement: true })
+  public logId: number
 
-export default function(connection: Sequelize.Sequelize): Sequelize.Model<MigrationsLogInstance, IMigrationsLog> {
-  return connection.define<MigrationsLogInstance, IMigrationsLog>(
-    'migrationsLog',
-    {
-      logId: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      timestamp: {
-        allowNull: false,
-        defaultValue: Sequelize.NOW,
-        type: Sequelize.DATE
-      },
-      /* tslint:disable-next-line:object-literal-sort-keys */
-      status: {
-        allowNull: false,
-        type: Sequelize.INTEGER
-      },
-      message: {
-        allowNull: false,
-        type: Sequelize.STRING(1000)
-      },
-      migration: {
-        allowNull: true,
-        type: Sequelize.STRING(1000)
-      },
-      details: {
-        allowNull: true,
-        type: Sequelize.STRING(2000)
-      }
-    },
-    {
-      tableName: '__MigrationsLog'
-    }
-  )
+  @Column({ allowNull: false, defaultValue: Date.now })
+  public timestamp: Date
+
+  @Column({ allowNull: false })
+  public status: number
+
+  @Column({ allowNull: false, type: DataType.STRING(1000) })
+  public message: string
+
+  @Column({ allowNull: true, type: DataType.STRING(1000) })
+  public migration?: string
+
+  @Column({ allowNull: true, type: DataType.STRING(2000) })
+  public details?: string
 }

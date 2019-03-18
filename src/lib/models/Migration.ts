@@ -1,29 +1,15 @@
-import Sequelize from 'sequelize'
+import { Column, Model, Table } from 'sequelize-typescript'
 
 export interface IMigration {
   migration: string
   timestamp?: Date
 }
 
-export type MigrationInstance = Sequelize.Instance<IMigration> & IMigration
+@Table({ tableName: '__Migrations' })
+export class Migration extends Model<Migration> {
+  @Column({ primaryKey: true })
+  public migration: string
 
-export default function(connection: Sequelize.Sequelize): Sequelize.Model<MigrationInstance, IMigration> {
-  return connection.define<MigrationInstance, IMigration>(
-    'migration',
-    {
-      migration: {
-        allowNull: false,
-        primaryKey: true,
-        type: Sequelize.STRING(1000)
-      },
-      timestamp: {
-        allowNull: false,
-        defaultValue: Sequelize.NOW,
-        type: Sequelize.DATE
-      }
-    },
-    {
-      tableName: '__Migrations'
-    }
-  )
+  @Column({ allowNull: false, defaultValue: Date.now })
+  public timestamp: Date
 }

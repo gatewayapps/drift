@@ -1,4 +1,5 @@
-import Sequelize, { Options } from 'sequelize'
+import { QueryTypes } from 'sequelize'
+import { Sequelize, SequelizeOptions } from 'sequelize-typescript'
 import { ProviderType } from '../DriftConfig'
 
 export interface IDatabaseOptions {
@@ -8,15 +9,16 @@ export interface IDatabaseOptions {
   databaseName: string
   username?: string
   password?: string
+  port?: number
   logging?: boolean
 }
 
-export function createDatabaseConnection(options: IDatabaseOptions, databaseNameOverride?: string): Sequelize.Sequelize {
+export function createDatabaseConnection(options: IDatabaseOptions, databaseNameOverride?: string): Sequelize {
   const dbName = databaseNameOverride || options.databaseName
   const dbUsername = options.username || ''
   const dbPassword = options.password || ''
 
-  const sequelizeConfig: Options = {
+  const sequelizeConfig: SequelizeOptions = {
     define: {
       timestamps: false
     },
@@ -35,9 +37,19 @@ export function createDatabaseConnection(options: IDatabaseOptions, databaseName
 
   switch (options.provider) {
     case 'mssql':
+      let port: number | undefined
+      let instanceName: string | undefined
+      if (options.port) {
+        port = options.port
+      } else if (options.instanceName && options.instanceName.toUpperCase() !== 'MSSQLSERVER') {
+        instanceName = options.instanceName
+      } else {
+        port = 1433
+      }
+      sequelizeConfig.port = port
       sequelizeConfig.dialectOptions = {
         encrypt: false,
-        instanceName: options.instanceName && options.instanceName.toUpperCase() !== 'MSSQLSERVER' ? options.instanceName : undefined,
+        instanceName,
         requestTimeout: 30000
       }
       break
@@ -67,5 +79,5 @@ export async function tryCreateDatabase(options: IDatabaseOptions): Promise<void
 
   const masterContext = createDatabaseConnection(options, masterDbName)
   await masterContext.authenticate()
-  await masterContext.query(createCommand, { type: Sequelize.QueryTypes.RAW })
+  await masterContext.query(createCommand, { type: QueryTypes.RAW })
 }

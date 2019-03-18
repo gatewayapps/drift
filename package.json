@@ -26,12 +26,13 @@
   },
   "homepage": "https://github.com/gatewayapps/drift#readme",
   "devDependencies": {
+    "@types/bluebird": "^3.5.26",
     "@types/colors": "^1.2.1",
     "@types/fs-extra": "^5.0.5",
     "@types/handlebars": "^4.1.0",
     "@types/js-yaml": "^3.12.0",
     "@types/node": "^11.10.5",
-    "@types/sequelize": "^4.27.41",
+    "@types/validator": "^10.9.0",
     "@types/yargs": "^12.0.9",
     "prettier": "^1.16.4",
     "prettier-tslint": "^0.4.2",
@@ -44,7 +45,9 @@
     "fs-extra": "^7.0.1",
     "handlebars": "^4.1.0",
     "js-yaml": "^3.12.2",
-    "sequelize": "^4.43.0",
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^5.1.0",
+    "sequelize-typescript": "^1.0.0-alpha.9",
     "yargs": "^13.2.2"
   },
   "optionalDependencies": {

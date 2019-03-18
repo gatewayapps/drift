@@ -1,7 +1,7 @@
 import { MigrationStatus } from '../constants'
 import { DbContext } from '../DbContext'
 import { loadConfiguration } from '../DriftConfig'
-import { IMigrationsLog } from '../models/MigrationsLog'
+import { IMigrationsLog, MigrationsLog } from '../models/MigrationsLog'
 import { createDatabaseConnection, IDatabaseOptions, tryCreateDatabase } from '../utils/database'
 import { ILogger, noLogger } from '../utils/logging'
 import { createMigrationHash, IReplacements, runMigrations, runPostDeploy } from '../utils/migration'
@@ -46,13 +46,13 @@ export async function publish(options: IPublishOptions): Promise<IPublishResult>
 
   // Check if migration needs to be applied
   const migrationHash = await createMigrationHash(config, options.database.provider)
-  const lastSuccess = await dbContext.MigrationLog.findOne({
+  const lastSuccess = await MigrationsLog.findOne({
     order: [['logId', 'DESC']],
     where: { status: MigrationStatus.Success }
   })
   if (!options.force && lastSuccess && lastSuccess.migration === migrationHash) {
     return {
-      migrationsLog: lastSuccess.toJSON(),
+      migrationsLog: lastSuccess.toJSON() as IMigrationsLog,
       status: MigrationStatus.AlreadyApplied,
       statusDesc: MigrationStatus[MigrationStatus.AlreadyApplied]
     }
@@ -71,7 +71,7 @@ export async function publish(options: IPublishOptions): Promise<IPublishResult>
     await runPostDeploy(dbContext, config, options.database.provider, replacements, logger)
 
     // Record successful migration
-    const migrationsLog = await dbContext.MigrationLog.create(
+    const migrationsLog = await MigrationsLog.create(
       {
         message: 'Migration completed successfully.',
         migration: migrationHash,
@@ -92,7 +92,7 @@ export async function publish(options: IPublishOptions): Promise<IPublishResult>
     }
   } catch (err) {
     await dbContext.rollbackTransaction()
-    const migrationsLog = await dbContext.MigrationLog.create({
+    const migrationsLog = await MigrationsLog.create({
       details: JSON.stringify(err),
       message: err.message,
       migration: err.scriptName,
