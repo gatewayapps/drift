@@ -1,17 +1,6 @@
 import { QueryTypes } from 'sequelize'
 import { Sequelize, SequelizeOptions } from 'sequelize-typescript'
-import { ProviderType } from '../DriftConfig'
-
-export interface IDatabaseOptions {
-  provider: ProviderType
-  host?: string
-  instanceName?: string
-  databaseName: string
-  username?: string
-  password?: string
-  port?: number
-  logging?: boolean
-}
+import { IDatabaseOptions } from '../interfaces/IDatabaseOptions'
 
 export function createDatabaseConnection(options: IDatabaseOptions, databaseNameOverride?: string): Sequelize {
   const dbName = databaseNameOverride || options.databaseName

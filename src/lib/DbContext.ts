@@ -1,6 +1,6 @@
 import Bluebird from 'bluebird'
 import { DataType, ModelAttributeColumnOptions, ModelAttributes, QueryTypes, Transaction } from 'sequelize'
-import { Model, Sequelize } from 'sequelize-typescript'
+import { Sequelize } from 'sequelize-typescript'
 import { Migration } from './models/Migration'
 import { MigrationsLog } from './models/MigrationsLog'
 

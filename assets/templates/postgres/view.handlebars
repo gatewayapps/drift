@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW {{ObjectName}}
+CREATE OR REPLACE VIEW "{{#if SchemaName}}{{SchemaName}}{{else}}public{{/if}}"."{{ObjectName}}"
 AS
 SELECT
   *

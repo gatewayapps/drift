@@ -5,6 +5,33 @@ export function exists(filePath: string) {
   return fs.existsSync(filePath)
 }
 
+export function readDirRecursive(dir: string): Promise<string[]> {
+  return new Promise(async (resolve, reject) => {
+    const filesList: string[] = []
+    const fullDir = path.resolve(dir)
+    fs.readdir(fullDir, async (err, files) => {
+      if (err) {
+        return reject(err)
+      }
+
+      try {
+        for (const file of files) {
+          const filePath = path.join(fullDir, file)
+          if (fs.statSync(filePath).isDirectory()) {
+            const subDirFiles = await readDirRecursive(filePath)
+            filesList.push(...subDirFiles)
+          } else {
+            filesList.push(filePath)
+          }
+        }
+        return resolve(filesList)
+      } catch (err2) {
+        return reject(err2)
+      }
+    })
+  })
+}
+
 export async function readFile(filePath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!exists(filePath)) {

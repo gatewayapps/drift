@@ -1,23 +1,13 @@
 import yaml from 'js-yaml'
 import path from 'path'
+import { ProviderType } from './constants'
+import { IDriftConfig } from './interfaces/IDriftConfig'
 import { readFile, writeFile } from './utils/fileHelper'
 
 export const defaultConfigFileName = 'drift.yml'
 
-export type ProviderType = 'mssql' | 'postgres'
-
-export interface IDriftConfig {
-  typescript?: boolean
-  providers: ProviderType[]
-  rootDir: string
-  scripts: {
-    migrations: string[]
-    postDeploy: string[]
-  }
-}
-
 const defaultConfig: IDriftConfig = {
-  providers: ['mssql'],
+  providers: [ProviderType.MsSql],
   rootDir: '.',
   scripts: {
     migrations: [],

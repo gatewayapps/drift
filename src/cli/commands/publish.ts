@@ -1,7 +1,10 @@
-import { IPublishOptions, publish } from '../../lib/commands/publish'
-import { MigrationStatus } from '../../lib/constants'
-import { logger } from '../../lib/utils/logging'
-import { IReplacements } from '../../lib/utils/migration'
+import { createPublisher } from '../../lib/commands/publish'
+import { MigrationStatus, PublisherEvents } from '../../lib/constants'
+import { IPublishOptions } from '../../lib/interfaces/IPublishOptions'
+import { IPublishProgress } from '../../lib/interfaces/IPublishProgress'
+import { IPublishResult } from '../../lib/interfaces/IPublishResult'
+import { IReplacements } from '../../lib/interfaces/IReplacements'
+import { logger } from '../utils/logging'
 
 export const command = 'publish <provider>'
 
@@ -71,29 +74,42 @@ export async function handler(argv: any) {
         username: argv.user
       },
       force: argv.force,
-      logger,
       replacements: prepareReplacements(argv.replacements)
     }
 
-    const result = await publish(publishOptions)
-
-    switch (result.status) {
-      case MigrationStatus.AlreadyApplied:
-        logger.success('No changes made, all migration files have previously been published to the database. Rerun with --force option to reapply the publish')
-        break
-
-      case MigrationStatus.Failed:
-        logger.error('Migration failed:', result.error)
-        break
-
-      case MigrationStatus.Success:
-        logger.success('Database migration complete')
-        break
-    }
-    process.exit(result.status === MigrationStatus.Failed ? 2 : 0)
+    const publisher = await createPublisher(publishOptions)
+    publisher.on(PublisherEvents.Progress, (progress: IPublishProgress) => {
+      const stepCount = progress.totalSteps && progress.totalSteps > 0 ? `${progress.completedSteps || 0}/${progress.totalSteps}` : ''
+      logger.status(`${progress.task}: ${progress.status} ${stepCount}`)
+    })
+    publisher.on(PublisherEvents.Error, (error: Error, result: IPublishResult) => {
+      logResult(result)
+      process.exit(2)
+    })
+    publisher.on(PublisherEvents.Complete, (result: IPublishResult) => {
+      logResult(result)
+      process.exit(0)
+    })
+    await publisher.start()
   } catch (err) {
     logger.error('Migration failed', err)
     process.exit(2)
+  }
+}
+
+function logResult(result: IPublishResult) {
+  switch (result.status) {
+    case MigrationStatus.AlreadyApplied:
+      logger.success('No changes made, all migration files have previously been published to the database. Rerun with --force option to reapply the publish')
+      break
+
+    case MigrationStatus.Failed:
+      logger.error('Migration failed:', result.error)
+      break
+
+    case MigrationStatus.Success:
+      logger.success('Database migration complete')
+      break
   }
 }
 
