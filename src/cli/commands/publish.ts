@@ -1,10 +1,12 @@
+import colors from 'colors'
+import ProgressBar from 'progress'
 import { createPublisher } from '../../lib/commands/publish'
 import { MigrationStatus, PublisherEvents } from '../../lib/constants'
 import { IPublishOptions } from '../../lib/interfaces/IPublishOptions'
 import { IPublishProgress } from '../../lib/interfaces/IPublishProgress'
 import { IPublishResult } from '../../lib/interfaces/IPublishResult'
 import { IReplacements } from '../../lib/interfaces/IReplacements'
-import { logger } from '../utils/logging'
+import { getTimestamp, logger } from '../utils/logging'
 
 export const command = 'publish <provider>'
 
@@ -77,10 +79,30 @@ export async function handler(argv: any) {
       replacements: prepareReplacements(argv.replacements)
     }
 
+    const progressBars: { [name: string]: ProgressBar } = {}
+
     const publisher = await createPublisher(publishOptions)
     publisher.on(PublisherEvents.Progress, (progress: IPublishProgress) => {
-      const stepCount = progress.totalSteps && progress.totalSteps > 0 ? `${progress.completedSteps || 0}/${progress.totalSteps}` : ''
-      logger.status(`${progress.task}: ${progress.status} ${stepCount}`)
+      if (progress.totalSteps) {
+        if (!progressBars[progress.task]) {
+          progressBars[progress.task] = new ProgressBar('[:timestamp]: :task [:bar] :current/:total', {
+            complete: colors.green('█'),
+            incomplete: ' ',
+            total: progress.totalSteps,
+            width: 30
+          })
+        }
+        const progressBar = progressBars[progress.task]
+        const delta = (progress.completedSteps || progressBar.curr) - (progressBar.curr || 0)
+        progressBar.interrupt(`[${colors.blue(getTimestamp())}]: ${progress.task}: ${progress.status}`)
+        progressBar.tick(delta, {
+          status: progress.status,
+          task: progress.task.padEnd(35, ' '),
+          timestamp: colors.blue(getTimestamp())
+        })
+      } else {
+        logger.status(`${progress.task}: ${progress.status}`)
+      }
     })
     publisher.on(PublisherEvents.Error, (error: Error, result: IPublishResult) => {
       logResult(result)
