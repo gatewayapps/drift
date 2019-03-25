@@ -1,4 +1,4 @@
-CREATE OR REPLACE PROCEDURE {{ObjectName}}
+CREATE OR REPLACE PROCEDURE "{{#if SchemaName}}{{SchemaName}}{{else}}public{{/if}}"."{{ObjectName}}"
 (
   param1 INT
 )

@@ -1,5 +1,6 @@
 import path from 'path'
-import { initializeConfig, ProviderType, writeConfiguration } from '../DriftConfig'
+import { ProviderType } from '../constants'
+import { initializeConfig, writeConfiguration } from '../DriftConfig'
 import { exists } from '../utils/fileHelper'
 
 export interface IInitOptions {

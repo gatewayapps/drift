@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION {{ObjectName}}
+CREATE OR REPLACE FUNCTION "{{#if SchemaName}}{{SchemaName}}{{else}}public{{/if}}"."{{ObjectName}}"
 (
   param1 INT
 )
@@ -12,6 +12,6 @@ AS $$
     col1,
     col2
   FROM
-    SomeTableOrView
+    "public"."SomeTableOrView"
 $$
 LANGUAGE SQL;
