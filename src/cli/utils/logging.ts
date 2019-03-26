@@ -10,6 +10,9 @@ export const logger = {
   },
   success(message?: any, ...optionalParams: any[]): void {
     console.log(`[${colors.green(getTimestamp())}]: ${message}`, ...optionalParams)
+  },
+  warning(message?: any, ...optionalParams: any[]): void {
+    console.log(`[${colors.yellow(getTimestamp())}]: ${message}`, ...optionalParams)
   }
 }
 

@@ -34,3 +34,9 @@ export enum PublisherEvents {
   Error = 'error',
   Progress = 'progress'
 }
+
+export enum ArchiverEvents {
+  Complete = 'complete',
+  Error = 'error',
+  Warning = 'warning'
+}

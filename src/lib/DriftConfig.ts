@@ -26,6 +26,10 @@ export function initializeConfig(rootDir: string | undefined, providers: Provide
   )
 }
 
+export function getConfigurationPath(configPath: string = defaultConfigFileName) {
+  return path.isAbsolute(configPath) ? configPath : path.resolve(process.cwd(), configPath)
+}
+
 export async function writeConfiguration(config: IDriftConfig, configFileName: string = defaultConfigFileName): Promise<string> {
   const configFile = path.resolve(process.cwd(), configFileName)
   await writeFile(configFile, yaml.safeDump(unresolvePaths(config, configFile)))
@@ -33,7 +37,7 @@ export async function writeConfiguration(config: IDriftConfig, configFileName: s
 }
 
 export async function loadConfiguration(configPath: string = defaultConfigFileName): Promise<IDriftConfig> {
-  const fullPath = path.resolve(process.cwd(), configPath)
+  const fullPath = getConfigurationPath(configPath)
   const configContents = await readFile(fullPath)
   const config = yaml.safeLoad(configContents) as IDriftConfig
   return resolvePaths(config, fullPath)
