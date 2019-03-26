@@ -1,5 +1,6 @@
-import { IInitOptions, init } from '../../lib/commands/init'
+import { init } from '../../lib/commands/init'
 import { defaultConfigFileName } from '../../lib/DriftConfig'
+import { IInitOptions } from '../../lib/interfaces/IInitOptions'
 
 import colors from 'colors'
 

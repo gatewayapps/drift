@@ -1,13 +1,7 @@
 import path from 'path'
-import { ProviderType } from '../constants'
 import { initializeConfig, writeConfiguration } from '../DriftConfig'
+import { IInitOptions } from '../interfaces/IInitOptions'
 import { exists } from '../utils/fileHelper'
-
-export interface IInitOptions {
-  config: string
-  dir: string
-  provider: ProviderType[]
-}
 
 export async function init(options: IInitOptions): Promise<string> {
   const config = initializeConfig(options.dir, options.provider)
