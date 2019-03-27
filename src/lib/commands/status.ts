@@ -11,11 +11,18 @@ export async function status(options: IStatusOptions): Promise<IStatusResult> {
   const config = await loadConfiguration(options.configFile)
   const dbContext = await createContext(options.database)
   const migrationHash = await createMigrationHash(config, options.database.provider)
+
   if (!(await isMigrationRequired(migrationHash))) {
     return {
       migrations: [],
       status: DatabasePublishStatus.UpToDate
     }
+  }
+
+  const missingMigrations = await getMigrationsToApply(config.scripts.migrations)
+  return {
+    migrations: missingMigrations,
+    status: missingMigrations.length === 0 ? DatabasePublishStatus.SignatureMismatch : DatabasePublishStatus.MissingMigrations
   }
 }
 
