@@ -40,3 +40,9 @@ export enum ArchiverEvents {
   Error = 'error',
   Warning = 'warning'
 }
+
+export enum DatabasePublishStatus {
+  MissingMigrations = 'missingMigrations',
+  SignatureMismatch = 'signatureMismatch',
+  UpToDate = 'upToDate'
+}
