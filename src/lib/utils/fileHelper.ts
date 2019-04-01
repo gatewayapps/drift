@@ -5,6 +5,18 @@ export function exists(filePath: string) {
   return fs.existsSync(filePath)
 }
 
+export function move(src: string, dest: string): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    fs.move(src, dest, (err) => {
+      if (err) {
+        return reject(err)
+      }
+
+      return resolve()
+    })
+  })
+}
+
 export function readDirRecursive(dir: string): Promise<string[]> {
   return new Promise(async (resolve, reject) => {
     const filesList: string[] = []
@@ -32,7 +44,7 @@ export function readDirRecursive(dir: string): Promise<string[]> {
   })
 }
 
-export async function readFile(filePath: string): Promise<string> {
+export function readFile(filePath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!exists(filePath)) {
       return reject(new Error(`File "${filePath}" does not exist`))
@@ -47,7 +59,7 @@ export async function readFile(filePath: string): Promise<string> {
   })
 }
 
-export async function writeFile(filePath: string, content: string): Promise<void> {
+export function writeFile(filePath: string, content: string): Promise<void> {
   return new Promise((resolve, reject) => {
     fs.ensureDir(path.dirname(filePath), (dirErr) => {
       if (dirErr) {
