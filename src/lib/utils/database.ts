@@ -28,6 +28,7 @@ export function createDatabaseConnection(options: IDatabaseOptions, databaseName
     case 'mssql':
       let port: number | undefined
       let instanceName: string | undefined
+      let authentication: any
       if (options.port) {
         port = options.port
       } else if (options.instanceName && options.instanceName.toUpperCase() !== 'MSSQLSERVER') {
@@ -35,15 +36,27 @@ export function createDatabaseConnection(options: IDatabaseOptions, databaseName
       } else {
         port = 1433
       }
-      sequelizeConfig.port = port
+      if (options.domain) {
+        authentication = {
+          options: {
+            domain: options.domain,
+            password: options.password,
+            userName: options.username
+          },
+          type: 'ntlm'
+        }
+      }
       sequelizeConfig.dialectOptions = {
-        encrypt: false,
-        instanceName,
-        requestTimeout: 30000
+        authentication,
+        options: {
+          encrypt: false,
+          instanceName,
+          port,
+          requestTimeout: 30000
+        }
       }
       break
   }
-
   const instance = new Sequelize(dbName, dbUsername, dbPassword, sequelizeConfig)
   return instance
 }

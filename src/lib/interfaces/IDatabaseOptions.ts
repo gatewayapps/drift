@@ -5,6 +5,7 @@ export interface IDatabaseOptions {
   host?: string
   instanceName?: string
   databaseName: string
+  domain?: string
   username?: string
   password?: string
   port?: number

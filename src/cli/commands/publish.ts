@@ -21,6 +21,9 @@ export const builder = {
     alias: ['d'],
     demandOption: true
   },
+  domain: {
+    demandOption: false
+  },
   force: {
     alias: ['f'],
     boolean: true
@@ -67,6 +70,7 @@ export async function handler(argv: any) {
       configFile: argv.config,
       database: {
         databaseName: argv.database,
+        domain: argv.domain,
         host: argv.host,
         instanceName: argv.instanceName,
         logging: argv.verbose,

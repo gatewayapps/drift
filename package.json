@@ -57,6 +57,6 @@
   },
   "optionalDependencies": {
     "pg": "^7.9.0",
-    "tedious": "^5.0.3"
+    "tedious": "^6.1.0"
   }
 }
