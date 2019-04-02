@@ -1,5 +1,5 @@
 import yaml from 'js-yaml'
-import path from 'path'
+import upath from 'upath'
 import { ProviderType } from './constants'
 import { IDriftConfig } from './interfaces/IDriftConfig'
 import { readFile, writeFile } from './utils/fileHelper'
@@ -27,11 +27,11 @@ export function initializeConfig(rootDir: string | undefined, providers: Provide
 }
 
 export function getConfigurationPath(configPath: string = defaultConfigFileName) {
-  return path.isAbsolute(configPath) ? configPath : path.resolve(process.cwd(), configPath)
+  return upath.isAbsolute(configPath) ? configPath : upath.resolve(process.cwd(), configPath)
 }
 
 export async function writeConfiguration(config: IDriftConfig, configFileName: string = defaultConfigFileName): Promise<string> {
-  const configFile = path.resolve(process.cwd(), configFileName)
+  const configFile = upath.resolve(process.cwd(), configFileName)
   await writeFile(configFile, yaml.safeDump(unresolvePaths(config, configFile)))
   return configFile
 }
@@ -44,14 +44,14 @@ export async function loadConfiguration(configPath: string = defaultConfigFileNa
 }
 
 function resolvePaths(config: IDriftConfig, configPath: string): IDriftConfig {
-  const configDir = path.dirname(path.resolve(configPath))
-  config.rootDir = path.resolve(path.join(configDir, config.rootDir))
+  const configDir = upath.dirname(upath.resolve(configPath))
+  config.rootDir = upath.resolve(upath.join(configDir, config.rootDir))
   return config
 }
 
 function unresolvePaths(config: IDriftConfig, configPath: string): IDriftConfig {
   const newConfig: IDriftConfig = Object.assign({}, config)
-  const configDir = path.dirname(path.resolve(configPath))
-  newConfig.rootDir = path.relative(configDir, config.rootDir)
+  const configDir = upath.dirname(upath.resolve(configPath))
+  newConfig.rootDir = upath.normalize(upath.relative(configDir, config.rootDir))
   return newConfig
 }

@@ -1,7 +1,7 @@
 import crypto from 'crypto'
 import folderHash from 'folder-hash'
 import fs from 'fs-extra'
-import path from 'path'
+import upath from 'upath'
 import { MigrationStatus, ProviderType } from '../constants'
 import { IDriftConfig } from '../interfaces/IDriftConfig'
 import { IScriptModule } from '../interfaces/IScriptModule'
@@ -17,7 +17,7 @@ export async function createMigrationHash(config: IDriftConfig, provider: Provid
   const hash = crypto.createHash(HASH_ALGO)
 
   for (const p of paths) {
-    const fullPath = path.resolve(config.rootDir, p)
+    const fullPath = upath.resolve(config.rootDir, p)
     if (fs.existsSync(fullPath)) {
       const childHash = await folderHash.hashElement(fullPath, { algo: HASH_ALGO, encoding: HASH_ENCODING })
       if (childHash.hash) {
@@ -47,13 +47,13 @@ export async function isMigrationRequired(migrationHash: string): Promise<boolea
 }
 
 export async function loadMigrationScript(rootDir: string, migration: string): Promise<IScriptModule> {
-  const fullPath = path.join(rootDir, 'migrations', migration)
+  const fullPath = upath.join(rootDir, 'migrations', migration)
   const migrationScript = (await import(fullPath)) as IScriptModule
   return migrationScript
 }
 
 export async function loadPostDeploymentScript(rootDir: string, postDeploy: string): Promise<IScriptModule> {
-  const fullPath = path.join(rootDir, 'postDeploy', postDeploy)
+  const fullPath = upath.join(rootDir, 'postDeploy', postDeploy)
   const postDeployScript = (await import(fullPath)) as IScriptModule
   return postDeployScript
 }

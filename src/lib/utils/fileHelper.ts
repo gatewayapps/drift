@@ -1,13 +1,17 @@
 import fs from 'fs-extra'
-import path from 'path'
+import upath from 'upath'
 
 export function exists(filePath: string) {
   return fs.existsSync(filePath)
 }
 
-export function move(src: string, dest: string): Promise<void> {
+export function moveDirOrFile(src: string, dest: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    fs.move(src, dest, (err) => {
+    if (!fs.existsSync(src)) {
+      return resolve()
+    }
+
+    fs.move(src, dest, { overwrite: true }, (err) => {
       if (err) {
         return reject(err)
       }
@@ -20,7 +24,12 @@ export function move(src: string, dest: string): Promise<void> {
 export function readDirRecursive(dir: string): Promise<string[]> {
   return new Promise(async (resolve, reject) => {
     const filesList: string[] = []
-    const fullDir = path.resolve(dir)
+    const fullDir = upath.resolve(dir)
+
+    if (!fs.existsSync(fullDir)) {
+      return resolve(filesList)
+    }
+
     fs.readdir(fullDir, async (err, files) => {
       if (err) {
         return reject(err)
@@ -28,7 +37,7 @@ export function readDirRecursive(dir: string): Promise<string[]> {
 
       try {
         for (const file of files) {
-          const filePath = path.join(fullDir, file)
+          const filePath = upath.join(fullDir, file)
           if (fs.statSync(filePath).isDirectory()) {
             const subDirFiles = await readDirRecursive(filePath)
             filesList.push(...subDirFiles)
@@ -61,7 +70,7 @@ export function readFile(filePath: string): Promise<string> {
 
 export function writeFile(filePath: string, content: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    fs.ensureDir(path.dirname(filePath), (dirErr) => {
+    fs.ensureDir(upath.dirname(filePath), (dirErr) => {
       if (dirErr) {
         return reject(dirErr)
       }

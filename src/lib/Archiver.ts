@@ -1,7 +1,7 @@
 import archiver from 'archiver'
 import EventEmitter from 'events'
 import fs from 'fs-extra'
-import path from 'path'
+import upath from 'upath'
 import { ArchiverEvents } from './constants'
 import { getConfigurationPath, loadConfiguration } from './DriftConfig'
 import { IArchiveOptions } from './interfaces/IArchiveOptions'
@@ -28,7 +28,7 @@ export class Archiver extends EventEmitter {
         reject(err)
       })
 
-      const outputFile = path.resolve(this.options.out)
+      const outputFile = upath.resolve(this.options.out)
       const output = fs.createWriteStream(outputFile, { flags: 'w' })
       output.on('close', () => {
         const result: IArchiveResult = {
@@ -41,8 +41,8 @@ export class Archiver extends EventEmitter {
 
       zip.pipe(output)
 
-      zip.directory(config.rootDir, path.relative(path.dirname(configPath), config.rootDir))
-      zip.file(this.options.config, { name: path.basename(this.options.config) })
+      zip.directory(config.rootDir, upath.relative(upath.dirname(configPath), config.rootDir))
+      zip.file(this.options.config, { name: upath.basename(this.options.config) })
 
       zip.finalize()
     })

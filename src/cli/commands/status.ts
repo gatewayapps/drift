@@ -1,14 +1,7 @@
-import colors from 'colors'
-import ProgressBar from 'progress'
-import { createPublisher } from '../../lib/commands/publish'
 import { status } from '../../lib/commands/status'
-import { DatabasePublishStatus, MigrationStatus, PublisherEvents } from '../../lib/constants'
-import { IPublishOptions } from '../../lib/interfaces/IPublishOptions'
-import { IPublishProgress } from '../../lib/interfaces/IPublishProgress'
-import { IPublishResult } from '../../lib/interfaces/IPublishResult'
-import { IReplacements } from '../../lib/interfaces/IReplacements'
+import { DatabasePublishStatus } from '../../lib/constants'
 import { IStatusOptions } from '../../lib/interfaces/IStatusOptions'
-import { getTimestamp, logger } from '../utils/logging'
+import { logger } from '../utils/logging'
 
 export const command = 'status <provider>'
 

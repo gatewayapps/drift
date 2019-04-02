@@ -2,6 +2,7 @@ import colors from 'colors'
 import { convert } from '../../lib/commands/convert'
 import { defaultConfigFileName } from '../../lib/DriftConfig'
 import { IConvertOptions } from '../../lib/interfaces/IConvertOptions'
+import { logger } from '../utils/logging'
 
 export const command = 'convert'
 
@@ -16,7 +17,7 @@ export const builder = {
   },
   in: {
     alias: ['i'],
-    default: 'migration.yml',
+    default: 'migration.yaml',
     demandOption: false,
     describe: 'Path to the ims-migration configuration file'
   },
@@ -31,8 +32,8 @@ export const builder = {
 export async function handler(argv: IConvertOptions) {
   try {
     const configPath = await convert(argv)
-    console.log(`Drift configuration file created at ${colors.green(configPath)}`)
+    logger.success(`Drift configuration file created at ${colors.green(configPath)}`)
   } catch (err) {
-    console.log(colors.red(err.message))
+    logger.error(err)
   }
 }
