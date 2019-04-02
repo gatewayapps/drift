@@ -36,7 +36,7 @@ export abstract class Publisher extends EventEmitter {
 
     // 2. Determine if a migration needs to be applied
     const migrationHash = await createMigrationHash(config, options.database.provider)
-    if (!options.force && (await isMigrationRequired(migrationHash))) {
+    if (!options.force && !(await isMigrationRequired(migrationHash))) {
       const result: IPublishResult = {
         status: MigrationStatus.AlreadyApplied,
         statusDesc: MigrationStatus[MigrationStatus.AlreadyApplied]
