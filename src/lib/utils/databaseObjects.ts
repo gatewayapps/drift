@@ -1,5 +1,5 @@
 import handlebars from 'handlebars'
-import path from 'path'
+import upath from 'upath'
 import { Providers, ProviderType } from '../constants'
 import { IDatabaseObject } from '../interfaces/IDatabaseObject'
 import { IDriftConfig } from '../interfaces/IDriftConfig'
@@ -10,7 +10,7 @@ import { readDirRecursive, readFile } from './fileHelper'
 const CREATEABLE_NAME_PATTERN = /(FUNCTION|PROCEDURE|VIEW)\s+(\[.+\]|".+"|[\w.]+\b)/
 
 export async function loadDatabaseObjects(config: IDriftConfig, provider: ProviderType, replacements: IReplacements): Promise<IDatabaseObject[]> {
-  const objectFiles = await readDirRecursive(path.join(config.rootDir, provider))
+  const objectFiles = await readDirRecursive(upath.join(config.rootDir, provider))
   const databaseObjects = await Promise.all(
     objectFiles.map(
       async (filePath): Promise<IDatabaseObject> => {
