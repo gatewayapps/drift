@@ -7,6 +7,9 @@ import { getConfigurationPath, loadConfiguration } from './DriftConfig'
 import { IArchiveOptions } from './interfaces/IArchiveOptions'
 import { IArchiveResult } from './interfaces/IArchiveResult'
 
+/**
+ * Class for generating a compressed zip archive of a Drift project
+ */
 export class Archiver extends EventEmitter {
   private options: IArchiveOptions
 
@@ -15,6 +18,11 @@ export class Archiver extends EventEmitter {
     this.options = options
   }
 
+  /**
+   * Begins creating the zip archive of the project. This method will emit events for ```warning```,
+   * ```error``` and ```complete``` to report back progess.
+   * @returns Results object for the archive on success
+   */
   public start(): Promise<IArchiveResult> {
     return new Promise<IArchiveResult>(async (resolve, reject) => {
       const configPath = getConfigurationPath(this.options.config)
