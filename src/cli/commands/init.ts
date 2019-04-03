@@ -17,7 +17,7 @@ export const builder = {
   },
   dir: {
     alias: ['d'],
-    default: '.',
+    default: './.drift',
     demandOption: false,
     describe: 'Base directory for script files'
   },
