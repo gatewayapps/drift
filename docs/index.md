@@ -15,5 +15,5 @@ The primary way to use Drift is via its command line interface (CLI). However, s
 - [Creating Functions, Procedures and Views](/docs/creating-functions-procedures-and-views.md)
 - [Publishing to a Database Server](/docs/publishing.md)
 - [Archiving a Drift Project](/docs/archiving-a-project.md)
-- Checking the Status of a Database
-- Converting from IMS Migration to Drift
+- [Checking the Status of a Database](/docs/checking-database-status.md)
+- [Converting from IMS Migration to Drift](/docs/converting-from-ims-migration-to-drift.md)

@@ -23,9 +23,7 @@ $ npm install --save pg pg-hstore # Postgres
 ```
 
 ## Documentation
-- [CLI](/docs/cli.md)
-- Node
-- Getting Started
-- Writing Migrations
 
-Tooling for migrating relational database schema changes
+- [Quick Start for Microsoft SQL Server](/docs/quick-start/mssql.md)
+- [Quick Start for PostgreSQL](/docs/quick-start/postgres.md)
+- [Guides](/docs/index.md)
