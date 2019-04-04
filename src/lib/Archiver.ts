@@ -1,6 +1,7 @@
 import archiver from 'archiver'
 import EventEmitter from 'events'
 import fs from 'fs-extra'
+import _ from 'lodash'
 import upath from 'upath'
 import { ArchiverEvents } from './constants'
 import { getConfigurationPath, loadConfiguration } from './DriftConfig'
@@ -13,9 +14,9 @@ import { IArchiveResult } from './interfaces/IArchiveResult'
 export class Archiver extends EventEmitter {
   private options: IArchiveOptions
 
-  constructor(options: IArchiveOptions) {
+  constructor(options: Partial<IArchiveOptions>) {
     super()
-    this.options = options
+    this.options = this.prepareOptions(options)
   }
 
   /**
@@ -66,5 +67,16 @@ export class Archiver extends EventEmitter {
 
   private onWarning(err: Error) {
     this.emit(ArchiverEvents.Warning, err)
+  }
+
+  private prepareOptions(options: Partial<IArchiveOptions>): IArchiveOptions {
+    const defaultOptions: IArchiveOptions = {
+      config: './drift.yml',
+      out: './drift.zip'
+    }
+
+    const mergedOptions = _.merge({}, defaultOptions, options)
+
+    return mergedOptions
   }
 }

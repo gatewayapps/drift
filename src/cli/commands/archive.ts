@@ -24,7 +24,7 @@ export const builder = {
 
 export async function handler(argv: any) {
   try {
-    const archiver = await createArchiver(argv)
+    const archiver = createArchiver(argv)
     archiver.on(ArchiverEvents.Warning, (error: Error) => {
       logger.warning(error.message, error)
     })
