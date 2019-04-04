@@ -128,9 +128,7 @@ function createTempDir(): string {
 
 async function convertObject(inputFile: string, outputFile: string): Promise<void> {
   const inputText = await readFile(inputFile)
-  const batches = splitBatches(inputText)
-    .filter((batch) => /^CREATE/i.test(batch))
-    .map((batch) => batch.replace(/^CREATE/i, 'ALTER'))
+  const batches = splitBatches(inputText).filter((batch) => /^CREATE/i.test(batch))
   await writeFile(outputFile, batches.join('\nGO\n'))
 }
 
