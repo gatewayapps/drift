@@ -7,10 +7,11 @@
     "drift": "./dist/cli/drift.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "cross-env NODE_ENV=production tsc",
+    "clean": "rm -Rf ./dist",
     "docs": "typedoc ./src/lib",
     "lint": "tslint --project .",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run clean && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -37,6 +38,7 @@
     "@types/progress": "^2.0.3",
     "@types/validator": "^10.9.0",
     "@types/yargs": "^12.0.9",
+    "cross-env": "^5.2.0",
     "prettier": "^1.16.4",
     "prettier-tslint": "^0.4.2",
     "tslint": "^5.13.1",
