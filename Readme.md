@@ -1,5 +1,5 @@
 # Drift
-Drift is a development tool for building and publishing relational databases. With Drift, you can define you data structure and logic, migrate your data structure as it changes over time, and publish changes to multiple database providers. Drift leverages [Sequelize](http://docs.sequelizejs.com) to provide support for publishing to multiple database providers.
+Drift is a development tool for building and publishing relational databases. With Drift, you can define you data structure and logic, migrate your data structure as it changes over time, and publish changes to multiple database providers. Drift leverages [Sequelize](http://docs.sequelizejs.com) v5 to provide support for publishing to multiple database providers.
 
 ## Table of Contents
 - [Supported Databases](#supported-databases)
@@ -21,6 +21,9 @@ $ npm install --save-dev @gatewayapps/drift
 $ npm install --save tedious # Microsoft SQL Server
 $ npm install --save pg pg-hstore # Postgres
 ```
+
+### Typescript
+Type definitions for typescript are included with the package so not addition @types install is required.
 
 ## Documentation
 
