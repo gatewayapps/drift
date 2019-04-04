@@ -1,0 +1,9 @@
+src
+node_modules
+.gitattributes
+.gitignore
+.npmignore
+prettier.config.js
+tsconfig.json
+tslint.json
+typedoc.json
