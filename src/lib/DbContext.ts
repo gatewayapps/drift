@@ -133,7 +133,7 @@ export class DbContext {
   }
 
   /**
-   * Drops an existing index
+   * Drops an existing index from a table
    * @param tableName Identifies the table to be updated
    * @param indexName Identifies the name of the index to be removed
    */
@@ -144,7 +144,7 @@ export class DbContext {
   }
 
   /**
-   * Renames an exsting column
+   * Renames an exsting column on a table
    * @param tableName Identifies the table to be updated
    * @param attrNameBefore The original name of the column
    * @param attrNameAfter The new name of the column
@@ -184,8 +184,9 @@ export class DbContext {
    * sanitizing and making sure the text is compatable with the database provider.
    * @param queryText Text of the query to be executed
    */
-  public runRawQuery(queryText: string): Bluebird<any> {
-    return this.connection.query(queryText, { type: QueryTypes.RAW, transaction: this.transaction })
+  public async runRawQuery(queryText: string): Promise<any> {
+    const result = await this.connection.query(queryText, { type: QueryTypes.RAW, transaction: this.transaction })
+    return result
   }
 
   /**
