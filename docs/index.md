@@ -5,8 +5,8 @@ The primary way to use Drift is via its command line interface (CLI). However, s
 
 ## Quick Start Guides
 
-- Microsoft SQL Server
-- Postgres
+- [Microsoft SQL Server](/docs/quick-start/mssql.md)
+- [Postgres](/docs/quick-start/postgres.md)
 
 ## Usage Guides
 
