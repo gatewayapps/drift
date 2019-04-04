@@ -1,7 +1,7 @@
 {
   "name": "@gatewayapps/drift",
   "version": "1.0.0",
-  "description": "",
+  "description": "Tooling for creating and migrating relational databases",
   "main": "dist/index.js",
   "bin": {
     "drift": "./dist/cli/drift.js"
