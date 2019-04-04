@@ -1,4 +1,5 @@
 import EventEmitter from 'events'
+import _ from 'lodash'
 import { Sequelize } from 'sequelize'
 import { MigrationStatus, ProviderType, PublisherEvents } from '../../constants'
 import { DbContext } from '../../DbContext'
@@ -21,9 +22,9 @@ import { buildReplacements } from '../../utils/publish'
 export abstract class Publisher extends EventEmitter {
   private options: IPublishOptions
 
-  constructor(options: IPublishOptions) {
+  constructor(options: Partial<IPublishOptions>) {
     super()
-    this.options = options
+    this.options = this.prepareOptions(options)
   }
 
   public async start(): Promise<IPublishResult> {
@@ -118,6 +119,24 @@ export abstract class Publisher extends EventEmitter {
 
   protected postApplyDatabaseObject(dbContext: DbContext, databaseObject: IDatabaseObject): Promise<void> {
     return Promise.resolve()
+  }
+
+  protected verifyOptions(options: IPublishOptions): void {
+    if (!options.configFile) {
+      throw new Error('options.configFile is required')
+    }
+
+    if (!options.database) {
+      throw new Error('options.database is required')
+    }
+
+    if (!options.database.provider) {
+      throw new Error('options.database.provider is required')
+    }
+
+    if (!options.database.databaseName) {
+      throw new Error('options.database.databaseName is required')
+    }
   }
 
   private async createContext(dbOptions: IDatabaseOptions) {
@@ -219,5 +238,22 @@ export abstract class Publisher extends EventEmitter {
     }
 
     this.onProgress({ task, status: 'All post deployment scripts have been applied', complete: true, completedSteps, totalSteps })
+  }
+
+  private prepareOptions(options: Partial<IPublishOptions>): IPublishOptions {
+    const defaultOptions: IPublishOptions = {
+      configFile: './drift.yml',
+      database: {
+        databaseName: '',
+        logging: false,
+        provider: ProviderType.MsSql
+      },
+      force: false,
+      replacements: {}
+    }
+
+    const mergedOptions: IPublishOptions = _.merge({}, defaultOptions, options)
+    this.verifyOptions(mergedOptions)
+    return mergedOptions
   }
 }
