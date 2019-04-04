@@ -107,7 +107,6 @@ export async function createView(name: string, configFilePath: string): Promise<
 async function generateScript(templatePath: string, destinationPath: string, context: any): Promise<boolean> {
   let templateFn: TemplateDelegate<any> | undefined
   try {
-    console.log(templatePath)
     templateFn = await loadTemplate(templatePath)
   } catch (err) {
     return false
