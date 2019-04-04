@@ -1,20 +1,29 @@
 import archiver from 'archiver'
 import EventEmitter from 'events'
 import fs from 'fs-extra'
+import _ from 'lodash'
 import upath from 'upath'
 import { ArchiverEvents } from './constants'
 import { getConfigurationPath, loadConfiguration } from './DriftConfig'
 import { IArchiveOptions } from './interfaces/IArchiveOptions'
 import { IArchiveResult } from './interfaces/IArchiveResult'
 
+/**
+ * Class for generating a compressed zip archive of a Drift project
+ */
 export class Archiver extends EventEmitter {
   private options: IArchiveOptions
 
-  constructor(options: IArchiveOptions) {
+  constructor(options: Partial<IArchiveOptions>) {
     super()
-    this.options = options
+    this.options = this.prepareOptions(options)
   }
 
+  /**
+   * Begins creating the zip archive of the project. This method will emit events for ```warning```,
+   * ```error``` and ```complete``` to report back progess.
+   * @returns Results object for the archive on success
+   */
   public start(): Promise<IArchiveResult> {
     return new Promise<IArchiveResult>(async (resolve, reject) => {
       const configPath = getConfigurationPath(this.options.config)
@@ -58,5 +67,16 @@ export class Archiver extends EventEmitter {
 
   private onWarning(err: Error) {
     this.emit(ArchiverEvents.Warning, err)
+  }
+
+  private prepareOptions(options: Partial<IArchiveOptions>): IArchiveOptions {
+    const defaultOptions: IArchiveOptions = {
+      config: './drift.yml',
+      out: './drift.zip'
+    }
+
+    const mergedOptions = _.merge({}, defaultOptions, options)
+
+    return mergedOptions
   }
 }

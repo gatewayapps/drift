@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "docs": "typedoc ./src/lib",
     "lint": "tslint --project .",
     "prepublishOnly": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -39,6 +40,7 @@
     "prettier": "^1.16.4",
     "prettier-tslint": "^0.4.2",
     "tslint": "^5.13.1",
+    "typedoc": "^0.14.2",
     "typescript": "^3.3.3333"
   },
   "dependencies": {

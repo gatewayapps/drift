@@ -85,7 +85,7 @@ export async function handler(argv: any) {
 
     const progressBars: { [name: string]: ProgressBar } = {}
 
-    const publisher = await createPublisher(publishOptions)
+    const publisher = createPublisher(publishOptions)
     publisher.on(PublisherEvents.Progress, (progress: IPublishProgress) => {
       if (progress.totalSteps) {
         if (!progressBars[progress.task]) {

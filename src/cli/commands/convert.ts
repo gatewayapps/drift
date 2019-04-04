@@ -11,7 +11,7 @@ export const desc = 'Converts an existing ims-migration project to a drift proje
 export const builder = {
   dir: {
     alias: ['d'],
-    default: '.',
+    default: './.drift',
     demandOption: false,
     describe: 'Base directory where script files will be created'
   },

@@ -1,0 +1,7 @@
+{
+  "excludeNotExported": true,
+  "mode": "file",
+  "name": "Drift",
+  "out": "typedocs",
+  "readme": "none"
+}

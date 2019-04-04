@@ -1,6 +1,7 @@
 import EventEmitter from 'events'
+import _ from 'lodash'
 import { Sequelize } from 'sequelize'
-import { MigrationStatus, ProviderType, PublisherEvents } from '../../constants'
+import { DatabasePublishStatus, MigrationStatus, ProviderType, PublisherEvents } from '../../constants'
 import { DbContext } from '../../DbContext'
 import { loadConfiguration } from '../../DriftConfig'
 import { IDatabaseObject } from '../../interfaces/IDatabaseObject'
@@ -10,6 +11,7 @@ import { IPublishOptions } from '../../interfaces/IPublishOptions'
 import { IPublishProgress } from '../../interfaces/IPublishProgress'
 import { IPublishResult } from '../../interfaces/IPublishResult'
 import { IReplacements } from '../../interfaces/IReplacements'
+import { IStatusResult } from '../../interfaces/IStatusResult'
 import { MigrationError } from '../../MigrationError'
 import { Migration } from '../../models/Migration'
 import { MigrationsLog } from '../../models/MigrationsLog'
@@ -21,9 +23,28 @@ import { buildReplacements } from '../../utils/publish'
 export abstract class Publisher extends EventEmitter {
   private options: IPublishOptions
 
-  constructor(options: IPublishOptions) {
+  constructor(options: Partial<IPublishOptions>) {
     super()
-    this.options = options
+    this.options = this.prepareOptions(options)
+  }
+
+  public async checkStatus(): Promise<IStatusResult> {
+    const config = await loadConfiguration(this.options.configFile)
+    const dbContext = await this.createContext(this.options.database)
+    const migrationHash = await createMigrationHash(config, this.options.database.provider)
+
+    if (!(await isMigrationRequired(migrationHash))) {
+      return {
+        migrations: [],
+        status: DatabasePublishStatus.UpToDate
+      }
+    }
+
+    const missingMigrations = await getMigrationsToApply(config.scripts.migrations)
+    return {
+      migrations: missingMigrations,
+      status: missingMigrations.length === 0 ? DatabasePublishStatus.SignatureMismatch : DatabasePublishStatus.MissingMigrations
+    }
   }
 
   public async start(): Promise<IPublishResult> {
@@ -32,7 +53,7 @@ export abstract class Publisher extends EventEmitter {
     const replacements = buildReplacements(options)
 
     // 1. Connect to the database and create DbContext
-    const dbContext = await this.createContext(options.database)
+    const dbContext = await this.createContext(options.database, true)
 
     // 2. Determine if a migration needs to be applied
     const migrationHash = await createMigrationHash(config, options.database.provider)
@@ -120,7 +141,25 @@ export abstract class Publisher extends EventEmitter {
     return Promise.resolve()
   }
 
-  private async createContext(dbOptions: IDatabaseOptions) {
+  protected verifyOptions(options: IPublishOptions): void {
+    if (!options.configFile) {
+      throw new Error('options.configFile is required')
+    }
+
+    if (!options.database) {
+      throw new Error('options.database is required')
+    }
+
+    if (!options.database.provider) {
+      throw new Error('options.database.provider is required')
+    }
+
+    if (!options.database.databaseName) {
+      throw new Error('options.database.databaseName is required')
+    }
+  }
+
+  private async createContext(dbOptions: IDatabaseOptions, attemptCreate: boolean = false) {
     const task = 'Connecting'
     this.onProgress({ task, status: 'Checking database connection', complete: false })
     // Create database if it does not exist
@@ -128,6 +167,9 @@ export abstract class Publisher extends EventEmitter {
     try {
       await dbConn.authenticate()
     } catch (err) {
+      if (!attemptCreate) {
+        throw err
+      }
       // Database may not exist so try to create it
       this.onProgress({ task, status: `Attempting to create database ${dbOptions.databaseName}`, complete: false })
       await tryCreateDatabase(dbOptions)
@@ -219,5 +261,22 @@ export abstract class Publisher extends EventEmitter {
     }
 
     this.onProgress({ task, status: 'All post deployment scripts have been applied', complete: true, completedSteps, totalSteps })
+  }
+
+  private prepareOptions(options: Partial<IPublishOptions>): IPublishOptions {
+    const defaultOptions: IPublishOptions = {
+      configFile: './drift.yml',
+      database: {
+        databaseName: '',
+        logging: false,
+        provider: ProviderType.MsSql
+      },
+      force: false,
+      replacements: {}
+    }
+
+    const mergedOptions: IPublishOptions = _.merge({}, defaultOptions, options)
+    this.verifyOptions(mergedOptions)
+    return mergedOptions
   }
 }

@@ -9,16 +9,26 @@ export enum ProviderType {
   Postgres = 'postgres'
 }
 
+/**
+ * @hidden
+ */
 export interface IProvider {
   defaultSchema: string
   key: string
 }
 
+/**
+ * @hidden
+ */
 export interface IProvidersMap {
   [key: string]: IProvider
 }
 
-export const Providers = {
+/**
+ * Default values for each database provider
+ * @hidden
+ */
+export const Providers: IProvidersMap = {
   [ProviderType.MsSql]: {
     defaultSchema: 'dbo',
     key: ProviderType.MsSql
