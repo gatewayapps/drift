@@ -1,4 +1,4 @@
-import { status } from '../../lib/commands/status'
+import { checkPublishStatus } from '../../lib/commands/status'
 import { DatabasePublishStatus } from '../../lib/constants'
 import { IStatusOptions } from '../../lib/interfaces/IStatusOptions'
 import { logger } from '../utils/logging'
@@ -58,7 +58,7 @@ export async function handler(argv: any) {
         username: argv.user
       }
     }
-    const result = await status(statusOptions)
+    const result = await checkPublishStatus(statusOptions)
     if (result.status === DatabasePublishStatus.UpToDate) {
       logger.success('Up to date!')
     } else if (result.migrations.length > 0) {

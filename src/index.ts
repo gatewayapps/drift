@@ -1,6 +1,6 @@
 export { createArchiver } from './lib/commands/archive'
 export { createPublisher } from './lib/commands/publish'
-export { status } from './lib/commands/status'
+export { checkPublishStatus } from './lib/commands/status'
 export { IArchiveOptions } from './lib/interfaces/IArchiveOptions'
 export { IArchiveResult } from './lib/interfaces/IArchiveResult'
 export { IDatabaseOptions } from './lib/interfaces/IDatabaseOptions'
