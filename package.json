@@ -27,6 +27,10 @@
     "url": "https://github.com/gatewayapps/drift/issues"
   },
   "homepage": "https://github.com/gatewayapps/drift#readme",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
+  },
   "devDependencies": {
     "@types/archiver": "^2.1.3",
     "@types/bluebird": "^3.5.26",
