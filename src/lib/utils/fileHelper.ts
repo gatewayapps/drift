@@ -70,7 +70,7 @@ export function readFile(filePath: string): Promise<string> {
 
 export function writeFile(filePath: string, content: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    fs.ensureDir(upath.dirname(filePath), (dirErr) => {
+    fs.ensureDir(upath.dirname(filePath), undefined, (dirErr) => {
       if (dirErr) {
         return reject(dirErr)
       }

@@ -1,0 +1,24 @@
+name: Production Release
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  production_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v1
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          scope: '@gatewayapps'
+          registry-url: https://npm.pkg.github.com
+      - name: Install Package Dependencies
+        run: yarn
+      - name: Publish
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
