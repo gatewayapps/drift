@@ -32,6 +32,10 @@ export const builder = {
     alias: ['h'],
     default: 'localhost'
   },
+  silent: {
+    alias: ['s'],
+    boolean: true
+  },
   instance: {
     alias: ['i'],
     default: 'MSSQLSERVER'
@@ -87,7 +91,7 @@ export async function handler(argv: any) {
 
     const publisher = createPublisher(publishOptions)
     publisher.on(PublisherEvents.Progress, (progress: IPublishProgress) => {
-      if (progress.totalSteps) {
+      if (progress.totalSteps && !argv.silent) {
         if (!progressBars[progress.task]) {
           progressBars[progress.task] = new ProgressBar('[:timestamp]: :task [:bar] :current/:total', {
             complete: colors.green('█'),
